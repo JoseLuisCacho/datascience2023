@@ -5,9 +5,9 @@
 		"annotations": [],
 		"type": "FileServer",
 		"typeProperties": {
-			"host": "\\\\DESKTOP-JUJ99J7\\D$\\dataUP",
+			"host": "\\\\DESKTOP-JUJ99J7\\D$\\data",
 			"userId": "MicrosoftAccount\\JOSE LUIS",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIwNjVhNTQzYi00MGFiLTQ0NTYtYmUyYi1jYjIxMTUzMGQ2NTciLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJmM2M3YWExYi1hNTJlLTQ4OTItOWU3OC05MTJiODE2MDAwY2QiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "IRLocaljlcg01",
