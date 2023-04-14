@@ -21,7 +21,7 @@
 		},
 		"FileLinkedService_properties_typeProperties_host": {
 			"type": "string",
-			"defaultValue": "\\\\DESKTOP-JUJ99J7\\D$\\dataUP"
+			"defaultValue": "\\\\DESKTOP-JUJ99J7\\D$\\data"
 		},
 		"FileLinkedService_properties_typeProperties_userId": {
 			"type": "string",
@@ -230,6 +230,30 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/FileLinkedService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "FileServer",
+				"typeProperties": {
+					"host": "[parameters('FileLinkedService_properties_typeProperties_host')]",
+					"userId": "[parameters('FileLinkedService_properties_typeProperties_userId')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('FileLinkedService_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "IRLocaljlcg01",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/IRLocaljlcg01')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_target_parquet')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -255,30 +279,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/FileLinkedService')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FileServer",
-				"typeProperties": {
-					"host": "[parameters('FileLinkedService_properties_typeProperties_host')]",
-					"userId": "[parameters('FileLinkedService_properties_typeProperties_userId')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('FileLinkedService_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "IRLocaljlcg01",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/IRLocaljlcg01')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ds_source_csv')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -292,12 +292,10 @@
 				"typeProperties": {
 					"location": {
 						"type": "FileServerLocation",
-						"fileName": "badges/sk_badges.csv",
 						"folderPath": "sharedknow"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": ",",
 					"escapeChar": "\\",
-					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
 				"schema": [

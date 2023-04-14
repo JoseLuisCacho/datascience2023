@@ -21,7 +21,7 @@
 		},
 		"FileLinkedService_properties_typeProperties_host": {
 			"type": "string",
-			"defaultValue": "\\\\DESKTOP-JUJ99J7\\D$\\dataUP"
+			"defaultValue": "\\\\DESKTOP-JUJ99J7\\D$\\data"
 		},
 		"FileLinkedService_properties_typeProperties_userId": {
 			"type": "string",

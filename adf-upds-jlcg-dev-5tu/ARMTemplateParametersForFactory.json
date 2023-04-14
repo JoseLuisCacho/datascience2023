@@ -15,7 +15,7 @@
 			"value": "https://dlsupdsjlcgdev9by.dfs.core.windows.net/"
 		},
 		"FileLinkedService_properties_typeProperties_host": {
-			"value": "\\\\DESKTOP-JUJ99J7\\D$\\dataUP"
+			"value": "\\\\DESKTOP-JUJ99J7\\D$\\data"
 		},
 		"FileLinkedService_properties_typeProperties_userId": {
 			"value": "MicrosoftAccount\\JOSE LUIS"
