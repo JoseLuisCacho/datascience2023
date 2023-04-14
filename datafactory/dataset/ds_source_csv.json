@@ -10,8 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "FileServerLocation",
-				"fileName": "users/sk_users.csv",
-				"folderPath": "sharedknow"
+				"fileName": "sk_users.csv",
+				"folderPath": "sharedknow/users"
 			},
 			"columnDelimiter": "|",
 			"escapeChar": "\\",
