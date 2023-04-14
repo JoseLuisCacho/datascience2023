@@ -135,7 +135,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/raw_ga4_core')]",
+			"name": "[concat(parameters('factoryName'), '/raw_know_core')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -169,16 +169,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/IRLocaljlcg01')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ADLSLinkedService')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -196,28 +186,14 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/FileLinkedService')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/IRLocaljlcg01')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"type": "FileServer",
-				"typeProperties": {
-					"host": "[parameters('FileLinkedService_properties_typeProperties_host')]",
-					"userId": "[parameters('FileLinkedService_properties_typeProperties_userId')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('FileLinkedService_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "IRLocaljlcg01",
-					"type": "IntegrationRuntimeReference"
-				}
+				"type": "SelfHosted",
+				"typeProperties": {}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/IRLocaljlcg01')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ds_target_parquet')]",
@@ -245,6 +221,30 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/FileLinkedService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "FileServer",
+				"typeProperties": {
+					"host": "[parameters('FileLinkedService_properties_typeProperties_host')]",
+					"userId": "[parameters('FileLinkedService_properties_typeProperties_userId')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('FileLinkedService_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "IRLocaljlcg01",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/IRLocaljlcg01')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_source_csv')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -258,7 +258,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "FileServerLocation",
-						"fileName": "users/sk_users.csv",
+						"fileName": "badges/sk_badges.csv",
 						"folderPath": "sharedknow"
 					},
 					"columnDelimiter": "|",
@@ -277,7 +277,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/raw_know_core')]",
+			"name": "[concat(parameters('factoryName'), '/raw_ga4_core')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
