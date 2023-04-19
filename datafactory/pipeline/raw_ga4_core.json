@@ -48,13 +48,23 @@
 				"inputs": [
 					{
 						"referenceName": "ds_source_csv",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_users.csv",
+							"appname": "sharedknow",
+							"objectname": "users"
+						}
 					}
 				],
 				"outputs": [
 					{
 						"referenceName": "ds_target_parquet",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "users.parquet",
+							"appname": "sharedknow",
+							"objectname": "users"
+						}
 					}
 				]
 			}
