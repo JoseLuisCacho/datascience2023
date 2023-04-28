@@ -13,12 +13,32 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/Create Table Sentence')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-----------------------------------------------\n--Paso 01\n-----------------------------------------------\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/raw/data/sharedknow/users/*.parquet',\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n-----------------------------------------------\n--Paso 02\n-----------------------------------------------\nCREATE EXTERNAL TABLE master_party.dim_users(\n    Id nvarchar(50),\n    CreationDate nvarchar(50),\n    DownVotes nvarchar(10),\n    LastAccessDate nvarchar(50)\n)\n\nWITH (\n     LOCATION = '/raw/data/sharedknow/users/',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(100) Id,CreationDate FROM master_party.dim_users;\n\n\nCREATE EXTERNAL TABLE master_party.dim_users_100(\n    Id nvarchar(50),\n    CreationDate nvarchar(50),\n    DownVotes nvarchar(10),\n    LastAccessDate nvarchar(50),\n    Reputation nvarchar(50),\n    UpVote nvarchar(50),\n    Views nvarchar(50),\n    Email nvarchar(50)\n)\n\nWITH (\n     LOCATION = '/raw/data/sharedknow/users/',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(100) * FROM master_party.dim_users_100;\n\n\n\n-----------------------------------------------\n--Paso 03\n-----------------------------------------------\nSELECT party_id,hash_unique,process_date, email,creation_date,\nreputation_count, upvotes_count, downvotes_count, views_count, record_source, \nflag_active,load_date,creation_user\nFROM master_party.m_party\n\n-----------------------------------------------\n--Paso 04\n-----------------------------------------------\nCREATE EXTERNAL TABLE business_knowa.bi_users_dim\nWITH (\n    LOCATION = '/business/business_knowa/bi_users_dim/',\n    DATA_SOURCE = ExternalUPDataSource,  \n    FILE_FORMAT = UPParquetFileFormat\n) AS \n\nSELECT TOP(100) Id,CreationDate FROM master_party.dim_users;\nSELECT * FROM business_knowa.bi_users_dim\n\n\n\nWITH ShortCreationTable(shortdate) AS (\nSELECT CONVERT(DATE, SUBSTRING(creation_date, 1,10)) AS shortdate\nFROM master_transaction.t_interaction\n), DistinctDateTable (distinctdate) AS (\nSELECT DISTINCT shortdate as distinctdate\nFROM ShortCreationTable\n)\n\nSELECT ROW_NUMBER() OVER(ORDER BY distinctdate ASC) AS period_id, \ndistinctdate as period,\nYEAR(distinctdate) as year,\nMONTH(distinctdate) as month\nFROM DistinctDateTable;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "updatalakehouse",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Initial_Config')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "/*---------------------------------------------\nScript Inicial de UP Lakehouse\n-----------------------------------------------\nAutor: Mauro A. León Payano\nFecha: 12/12/2022*/\n-----------------------------------------------\n--Paso 1: Creacion de repositorio de datos\n-----------------------------------------------\nCREATE DATABASE updatalakehouse;\nGO\n\nUSE updatalakehouse;\nGO\n\n-----------------------------------------------\n--Paso 2: Creacion de dataset por zona de datos\n-----------------------------------------------\nCREATE SCHEMA master_transaction AUTHORIZATION dbo;\nGO\n\nCREATE SCHEMA master_party AUTHORIZATION dbo;\nGO\n\nCREATE SCHEMA master_channel AUTHORIZATION dbo;\nGO\n\nCREATE SCHEMA business_knowa AUTHORIZATION dbo;\nGO\n\n-------------------------------------------------------------------------\n--Paso 3: Asignación de clave de encriptación y formato de tablas externas\n-------------------------------------------------------------------------\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = 'p39248J#asdasdiu89yuj1k23sdpipi'\nGO\n\nCREATE DATABASE SCOPED CREDENTIAL UPUserIdentity WITH IDENTITY = 'SHARED ACCESS SIGNATURE',\nSECRET = '?sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2023-06-30T09:39:32Z&st=2023-04-26T01:39:32Z&spr=https&sig=V2B7Vby5CiaJ6Fh%2FFiJAACclkboPC8PVHIHCAGIzy5g%3D'\nGO\n\nCREATE EXTERNAL DATA SOURCE ExternalUPDataSource\nWITH (\n    LOCATION = 'https://dlsupdsjlcgdev9by.dfs.core.windows.net/',\n    CREDENTIAL = UPUserIdentity\n);\nGO\n\nCREATE EXTERNAL FILE FORMAT UPParquetFileFormat \nWITH (\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n);\nGO\n\nCREATE EXTERNAL FILE FORMAT UPDeltaFileFormat\nWITH (\n    FORMAT_TYPE = DELTA\n);\nGO\n\n",
+					"query": "/*---------------------------------------------\nScript Inicial de UP Lakehouse\n-----------------------------------------------\nAutor: Mauro A. León Payano\nFecha: 12/12/2022*/\n-----------------------------------------------\n--Paso 1: Creacion de repositorio de datos\n-----------------------------------------------\nCREATE DATABASE updatalakehouse;\nGO\n\nUSE updatalakehouse;\nGO\n\n-----------------------------------------------\n--Paso 2: Creacion de dataset por zona de datos\n-----------------------------------------------\nCREATE SCHEMA master_transaction AUTHORIZATION dbo;\nGO\n\nCREATE SCHEMA master_party AUTHORIZATION dbo;\nGO\n\nCREATE SCHEMA master_channel AUTHORIZATION dbo;\nGO\n\nCREATE SCHEMA business_knowa AUTHORIZATION dbo;\nGO\n\n-------------------------------------------------------------------------\n--Paso 3: Asignación de clave de encriptación y formato de tablas externas\n-------------------------------------------------------------------------\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = 'p39248J#asdasdiu89yuj1k23sdpipi'\nGO\n\nCREATE DATABASE SCOPED CREDENTIAL UPUserIdentity WITH IDENTITY = 'SHARED ACCESS SIGNATURE',\nSECRET = '?sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2023-06-30T09:39:32Z&st=2023-04-26T01:39:32Z&spr=https&sig=V2B7Vby5CiaJ6Fh%2FFiJAACclkboPC8PVHIHCAGIzy5g%3D'\nGO\n\nCREATE EXTERNAL DATA SOURCE ExternalUPDataSource\nWITH (\n    LOCATION = 'https://dlsupdsjlcgdev9by.dfs.core.windows.net/',\n    CREDENTIAL = UPUserIdentity\n);\nGO\n\nCREATE EXTERNAL FILE FORMAT UPParquetFileFormat \nWITH (\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n);\nGO\n\nCREATE EXTERNAL FILE FORMAT UPDeltaFileFormat\nWITH (\n    FORMAT_TYPE = DELTA\n);\nGO\n\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},
