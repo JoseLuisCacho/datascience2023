@@ -23,7 +23,12 @@
 							"objectname": "clientes"
 						}
 					},
-					"fieldList": [],
+					"fieldList": [
+						"childItems",
+						"itemName",
+						"size",
+						"lastModified"
+					],
 					"storeSettings": {
 						"type": "FileServerReadSettings",
 						"enablePartitionDiscovery": false
