@@ -22,7 +22,7 @@
 			"location": {
 				"type": "FileServerLocation",
 				"fileName": {
-					"value": "@concat(dataset().appname,'/',dataset().objectname,'/',dataset().name)",
+					"value": "@concat(dataset().appname,'/',dataset().objectname,'/', '.csv')",
 					"type": "Expression"
 				}
 			},

@@ -27,7 +27,8 @@
 					"fieldList": [
 						"itemName",
 						"lastModified",
-						"size"
+						"size",
+						"childItems"
 					],
 					"storeSettings": {
 						"type": "FileServerReadSettings",
