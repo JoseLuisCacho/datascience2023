@@ -20,14 +20,14 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"appname": "trabajofinal",
-							"objectname": "clientes"
+							"objectname": "clientes",
+							"name": "tf_deudores_tienda0.csv"
 						}
 					},
 					"fieldList": [
-						"childItems",
 						"itemName",
-						"size",
-						"lastModified"
+						"lastModified",
+						"size"
 					],
 					"storeSettings": {
 						"type": "FileServerReadSettings",
