@@ -1,8 +1,8 @@
 {
-	"name": "ds_source_csv_tf",
+	"name": "ds_target_parquet_tf",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "FileLinkedService",
+			"referenceName": "ADLSLinkedService",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
@@ -14,18 +14,18 @@
 			}
 		},
 		"annotations": [],
-		"type": "DelimitedText",
+		"type": "Parquet",
 		"typeProperties": {
 			"location": {
-				"type": "FileServerLocation",
-				"folderPath": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
 					"value": "@concat(dataset().appname,'/',dataset().objectname)",
 					"type": "Expression"
-				}
+				},
+				"folderPath": "data",
+				"fileSystem": "raw"
 			},
-			"columnDelimiter": ",",
-			"escapeChar": "\\",
-			"quoteChar": "\""
+			"compressionCodec": "snappy"
 		},
 		"schema": []
 	}
