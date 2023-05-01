@@ -21,7 +21,7 @@
 						"parameters": {
 							"appname": "trabajofinal",
 							"objectname": "clientes",
-							"name": "tf_deudores_tienda0.csv"
+							"name": "*.csv"
 						}
 					},
 					"fieldList": [
