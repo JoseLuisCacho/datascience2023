@@ -1,39 +1,6 @@
 {
 	"name": "master_party_core",
 	"properties": {
-		"activities": [
-			{
-				"name": "Data Clientes",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "dataflow_trabajofinal",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"RawClientes": {
-								"appname": "trabajofinal",
-								"objectname": "clientes",
-								"fileName": "archivo1.parquet"
-							}
-						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			}
-		],
 		"variables": {
 			"Demo": {
 				"type": "String"
