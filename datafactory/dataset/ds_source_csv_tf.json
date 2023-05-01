@@ -11,6 +11,9 @@
 			},
 			"objectname": {
 				"type": "string"
+			},
+			"name": {
+				"type": "String"
 			}
 		},
 		"annotations": [],
@@ -19,7 +22,7 @@
 			"location": {
 				"type": "FileServerLocation",
 				"fileName": {
-					"value": "@concat(dataset().appname,'/',dataset().objectname)",
+					"value": "@concat(dataset().appname,'/',dataset().objectname,'/',dataset().name)",
 					"type": "Expression"
 				}
 			},
