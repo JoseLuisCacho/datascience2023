@@ -1,0 +1,26 @@
+{
+	"name": "dataflow_trabajofinal",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_target_parquet_tf",
+						"type": "DatasetReference"
+					},
+					"name": "RawClientes",
+					"description": "Leer información Raw dentro Blob Containers."
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> RawClientes"
+			]
+		}
+	}
+}
