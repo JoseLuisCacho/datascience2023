@@ -16,17 +16,17 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "ds_source_csv_tf",
+						"referenceName": "DelimitedText1",
 						"type": "DatasetReference",
 						"parameters": {
 							"appname": "trabajofinal",
-							"objectname": "clientes"
+							"objectname": "clientes",
+							"filename": "archivo1.csv"
 						}
 					},
 					"fieldList": [
 						"itemName",
 						"lastModified",
-						"size",
 						"childItems"
 					],
 					"storeSettings": {
