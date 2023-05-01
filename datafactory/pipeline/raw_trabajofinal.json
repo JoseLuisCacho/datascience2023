@@ -39,55 +39,75 @@
 				}
 			},
 			{
-				"name": "ForEach1",
-				"type": "ForEach",
-				"dependsOn": [],
+				"name": "Copy Clientes",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
-					"items": {
-						"value": "",
-						"type": "Expression"
-					},
-					"activities": [
-						{
-							"name": "Copy Clientes",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "DelimitedTextSource",
-									"storeSettings": {
-										"type": "FileServerReadSettings",
-										"recursive": true,
-										"enablePartitionDiscovery": false
-									},
-									"formatSettings": {
-										"type": "DelimitedTextReadSettings"
-									}
-								},
-								"enableStaging": false
-							},
-							"inputs": [
-								{
-									"referenceName": "ds_source_csv_tf",
-									"type": "DatasetReference",
-									"parameters": {
-										"appname": "trabajofinal",
-										"objectname": "clientes"
-									}
-								}
-							]
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "FileServerReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
 						}
-					]
-				}
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_source_csv_tf",
+						"type": "DatasetReference",
+						"parameters": {
+							"appname": "trabajofinal",
+							"objectname": "clientes"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_target_parquet_tf",
+						"type": "DatasetReference",
+						"parameters": {
+							"appname": "trabajofinal",
+							"objectname": "clientes"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
