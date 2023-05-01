@@ -11,9 +11,6 @@
 			},
 			"objectname": {
 				"type": "string"
-			},
-			"name": {
-				"type": "String"
 			}
 		},
 		"annotations": [],
