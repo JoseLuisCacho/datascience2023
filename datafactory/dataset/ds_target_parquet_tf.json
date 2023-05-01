@@ -11,6 +11,9 @@
 			},
 			"objectname": {
 				"type": "string"
+			},
+			"fileName": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -19,7 +22,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "@concat(dataset().appname,'/',dataset().objectname)",
+					"value": "@concat(dataset().appname,'/',dataset().objectname,'/',dataset().fileName)",
 					"type": "Expression"
 				},
 				"folderPath": "data",

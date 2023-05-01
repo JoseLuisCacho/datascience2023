@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Get Metadata",
+				"name": "Get Metadata Clientes",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
@@ -20,14 +20,14 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"appname": "trabajofinal",
-							"objectname": "clientes"
+							"objectname": "clientes",
+							"fileName": "archivo1.csv"
 						}
 					},
 					"fieldList": [
 						"itemName",
 						"itemType",
-						"lastModified",
-						"childItems"
+						"lastModified"
 					],
 					"storeSettings": {
 						"type": "FileServerReadSettings",
@@ -43,7 +43,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Get Metadata",
+						"activity": "Get Metadata Clientes",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -94,7 +94,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"appname": "trabajofinal",
-							"objectname": "clientes"
+							"objectname": "clientes",
+							"fileName": "archivo1.csv"
 						}
 					}
 				],
@@ -104,7 +105,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"appname": "trabajofinal",
-							"objectname": "clientes"
+							"objectname": "clientes",
+							"fileName": "archivo1.parquet"
 						}
 					}
 				]
