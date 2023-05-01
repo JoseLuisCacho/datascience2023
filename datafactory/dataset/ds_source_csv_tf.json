@@ -19,7 +19,7 @@
 			"location": {
 				"type": "FileServerLocation",
 				"fileName": {
-					"value": "@concat(dataset().appname,'/',dataset().objectname,'/')",
+					"value": "@concat(dataset().appname,'/',dataset().objectname)",
 					"type": "Expression"
 				}
 			},
