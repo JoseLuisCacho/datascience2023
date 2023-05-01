@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": "m_clientes1.parquet",
 				"folderPath": "data",
 				"fileSystem": "master"
 			},
