@@ -13,13 +13,62 @@
 					"description": "Leer información Raw dentro Blob Containers."
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_master_source_parquet_tf",
+						"type": "DatasetReference"
+					},
+					"name": "MasterClientes"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CODMES as string,",
+				"          Cod_Cliente as string,",
+				"          Edad as string,",
+				"          Departamento as string,",
+				"          Nivel_Educ as string,",
+				"          {Antigüedad_Laboral} as string,",
+				"          Tiempo_Direccion_Actual as string,",
+				"          Ingreso as string,",
+				"          Ratio_Deuda_Ingreso as string,",
+				"          Deuda_TC as string,",
+				"          Deuda_Otros as string,",
+				"          Ratio_Cuota_Ingreso as string,",
+				"          Default as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> RawClientes"
+				"     format: 'parquet') ~> RawClientes",
+				"RawClientes select(mapColumn(",
+				"          Cod_Cliente,",
+				"          Edad,",
+				"          Departamento,",
+				"          Default",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(EdadCambiado = toInteger(Edad)) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     filePattern:'m_clientes[n].parquet',",
+				"     truncate: true,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> MasterClientes"
 			]
 		}
 	}
