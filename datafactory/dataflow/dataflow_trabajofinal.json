@@ -24,10 +24,13 @@
 			],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "TranformacionDatos"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "SelecDatos"
+				},
+				{
+					"name": "EmptyFiltrer"
 				}
 			],
 			"scriptLines": [
@@ -50,16 +53,32 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> RawClientes",
+				"SelecDatos derive(Edad = toInteger(Edad),",
+				"          Antiguedad_Laboral = toInteger(Antiguedad_Laboral),",
+				"          Tiempo_Direccion_Actual = toInteger(Tiempo_Direccion_Actual),",
+				"          Ingreso = toInteger(Ingreso),",
+				"          Ratio_Deuda_Ingreso = toDecimal(Ratio_Deuda_Ingreso),",
+				"          Deuda_TC = toInteger(Deuda_TC),",
+				"          Deuda_Otros = toInteger(Deuda_Otros),",
+				"          Ratio_Cuota_Ingreso = toDecimal(Ratio_Cuota_Ingreso)) ~> TranformacionDatos",
 				"RawClientes select(mapColumn(",
+				"          CODMES,",
 				"          Cod_Cliente,",
 				"          Edad,",
 				"          Departamento,",
-				"          Default",
+				"          Nivel_Educ,",
+				"          Antiguedad_Laboral = {Antigüedad_Laboral},",
+				"          Tiempo_Direccion_Actual,",
+				"          Ingreso,",
+				"          Ratio_Deuda_Ingreso,",
+				"          Deuda_TC,",
+				"          Deuda_Otros,",
+				"          Ratio_Cuota_Ingreso",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 derive(EdadCambiado = toInteger(Edad)) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelecDatos",
+				"TranformacionDatos filter(!(isNull(Cod_Cliente))) ~> EmptyFiltrer",
+				"EmptyFiltrer sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     filePattern:'m_clientes[n].parquet',",
