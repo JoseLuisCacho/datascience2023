@@ -1,0 +1,124 @@
+{
+	"name": "Preprocessing",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "ApacheNotebook",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "e83c12db-1737-480f-b880-845bee719dca"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/0415ebd8-8cd6-4d2d-9b25-ee1c04ba873a/resourceGroups/rg-upds-jlcg-dev-001/providers/Microsoft.Synapse/workspaces/synw-upds-jlcg-dev-4s2/bigDataPools/ApacheNotebook",
+				"name": "ApacheNotebook",
+				"type": "Spark",
+				"endpoint": "https://synw-upds-jlcg-dev-4s2.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/ApacheNotebook",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.3",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 15
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"import pandas as pd\r\n",
+					"import matplotlib.pyplot as plt\r\n",
+					"import seaborn as sns\r\n",
+					"import statsmodels.api as sm\r\n",
+					"\r\n",
+					"df = pd.read_parquet('abfss://master@dlsupdsjlcgdev9by.dfs.core.windows.net/data/m_clientes1.parquet', \r\n",
+					"storage_options = {'account_key':'SZSdW41bmijR6bKC3ljq2gIIxrcRgLyA/c+eiWWWeyXXOKWXP8GDvXTo2V84rycMxHkBIPQvQCt/+AStSNOUMQ=='})\r\n",
+					"df.columns"
+				],
+				"execution_count": 46
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"group_edad= df.groupby('Nivel_Educ').count()\r\n",
+					"group_edad['Edad'].plot(kind='bar')"
+				],
+				"execution_count": 47
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"group_edad= df.groupby('Nivel_Educ').count()\r\n",
+					"group_edad['Default_Value'].plot(kind='bar')"
+				],
+				"execution_count": 52
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"correlacion = df['Antiguedad_Laboral'].corr(df['Ingreso'])\r\n",
+					"print(correlacion)"
+				],
+				"execution_count": 48
+			}
+		]
+	}
+}
