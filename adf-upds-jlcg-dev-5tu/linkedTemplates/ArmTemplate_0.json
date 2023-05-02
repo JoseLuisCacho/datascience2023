@@ -67,61 +67,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/master_party_core')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Set variable1",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "Demo",
-							"value": "Demo"
-						}
-					},
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"Demo": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "02_master_models"
-				},
-				"annotations": [],
-				"lastPublishTime": "2023-04-14T00:48:58Z"
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/master_transaction_core')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -282,6 +227,46 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_target_parquet_tf')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLSLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"appname": {
+						"type": "string"
+					},
+					"objectname": {
+						"type": "string"
+					},
+					"fileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat(dataset().appname,'/',dataset().objectname,'/',dataset().fileName)",
+							"type": "Expression"
+						},
+						"folderPath": "data",
+						"fileSystem": "raw"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLSLinkedService')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/FileLinkedService')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -303,6 +288,32 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/IRLocaljlcg01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_master_source_parquet_tf')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLSLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "m_clientes1.parquet",
+						"folderPath": "data",
+						"fileSystem": "master"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLSLinkedService')]"
 			]
 		},
 		{
@@ -339,7 +350,7 @@
 							"type": "Expression"
 						}
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": ",",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -352,6 +363,212 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/FileLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_source_csv_tf')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "FileLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"appname": {
+						"type": "string"
+					},
+					"objectname": {
+						"type": "string"
+					},
+					"fileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FileServerLocation",
+						"fileName": {
+							"value": "@dataset().fileName",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(dataset().appname,'/',dataset().objectname)",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/FileLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_trabajofinal')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_target_parquet_tf",
+								"type": "DatasetReference"
+							},
+							"name": "RawClientes",
+							"description": "Leer información Raw dentro Blob Containers."
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_master_source_parquet_tf",
+								"type": "DatasetReference"
+							},
+							"name": "MasterClientes"
+						}
+					],
+					"transformations": [
+						{
+							"name": "TranformacionDatos"
+						},
+						{
+							"name": "SelecDatos"
+						},
+						{
+							"name": "EmptyFiltrer"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CODMES as string,",
+						"          Cod_Cliente as string,",
+						"          Edad as string,",
+						"          Departamento as string,",
+						"          Nivel_Educ as string,",
+						"          {Antigüedad_Laboral} as string,",
+						"          Tiempo_Direccion_Actual as string,",
+						"          Ingreso as string,",
+						"          Ratio_Deuda_Ingreso as string,",
+						"          Deuda_TC as string,",
+						"          Deuda_Otros as string,",
+						"          Ratio_Cuota_Ingreso as string,",
+						"          Default as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> RawClientes",
+						"SelecDatos derive(Edad = toInteger(Edad),",
+						"          Antiguedad_Laboral = toInteger(Antiguedad_Laboral),",
+						"          Tiempo_Direccion_Actual = toInteger(Tiempo_Direccion_Actual),",
+						"          Ingreso = toInteger(Ingreso),",
+						"          Ratio_Deuda_Ingreso = toDecimal(Ratio_Deuda_Ingreso),",
+						"          Deuda_TC = toInteger(Deuda_TC),",
+						"          Deuda_Otros = toInteger(Deuda_Otros),",
+						"          Ratio_Cuota_Ingreso = toDecimal(Ratio_Cuota_Ingreso)) ~> TranformacionDatos",
+						"RawClientes select(mapColumn(",
+						"          CODMES,",
+						"          Cod_Cliente,",
+						"          Edad,",
+						"          Departamento,",
+						"          Nivel_Educ,",
+						"          Antiguedad_Laboral = {Antigüedad_Laboral},",
+						"          Tiempo_Direccion_Actual,",
+						"          Ingreso,",
+						"          Ratio_Deuda_Ingreso,",
+						"          Deuda_TC,",
+						"          Deuda_Otros,",
+						"          Ratio_Cuota_Ingreso",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelecDatos",
+						"TranformacionDatos filter(!(isNull(Cod_Cliente))) ~> EmptyFiltrer",
+						"EmptyFiltrer sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     filePattern:'m_clientes[n].parquet',",
+						"     truncate: true,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> MasterClientes"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_target_parquet_tf')]",
+				"[concat(variables('factoryId'), '/datasets/ds_master_source_parquet_tf')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/master_party_core')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow Clientes",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow_trabajofinal",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"RawClientes": {
+										"appname": "trabajofinal",
+										"objectname": "clientes",
+										"fileName": "archivo1.parquet"
+									},
+									"MasterClientes": {}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"Demo": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "02_master_models"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-04-14T00:48:58Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow_trabajofinal')]"
 			]
 		},
 		{
@@ -511,6 +728,137 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_source_csv')]",
 				"[concat(variables('factoryId'), '/datasets/ds_target_parquet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/raw_trabajofinal')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata Clientes",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_source_csv_tf",
+								"type": "DatasetReference",
+								"parameters": {
+									"appname": "trabajofinal",
+									"objectname": "clientes",
+									"fileName": "archivo1.csv"
+								}
+							},
+							"fieldList": [
+								"itemName",
+								"itemType",
+								"lastModified"
+							],
+							"storeSettings": {
+								"type": "FileServerReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Copy Clientes",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata Clientes",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FileServerReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_source_csv_tf",
+								"type": "DatasetReference",
+								"parameters": {
+									"appname": "trabajofinal",
+									"objectname": "clientes",
+									"fileName": "archivo1.csv"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_target_parquet_tf",
+								"type": "DatasetReference",
+								"parameters": {
+									"appname": "trabajofinal",
+									"objectname": "clientes",
+									"fileName": "archivo1.parquet"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "01_raw_source"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_source_csv_tf')]",
+				"[concat(variables('factoryId'), '/datasets/ds_target_parquet_tf')]"
 			]
 		}
 	]
