@@ -96,8 +96,7 @@
 										"fileName": "archivo1.parquet"
 									},
 									"MasterClientes": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -511,6 +510,32 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_master_source_parquet_tf')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLSLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "m_clientes1.parquet",
+						"folderPath": "data",
+						"fileSystem": "master"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLSLinkedService')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_source_csv')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -766,10 +791,10 @@
 							"name": "TranformacionDatos"
 						},
 						{
-							"name": "SelecDatos"
+							"name": "EmptyFiltrer"
 						},
 						{
-							"name": "EmptyFiltrer"
+							"name": "select1"
 						}
 					],
 					"scriptLines": [
@@ -792,7 +817,7 @@
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
 						"     format: 'parquet') ~> RawClientes",
-						"SelecDatos derive(Edad = toInteger(Edad),",
+						"select1 derive(Edad = toInteger(Edad),",
 						"          Antiguedad_Laboral = toInteger(Antiguedad_Laboral),",
 						"          Tiempo_Direccion_Actual = toInteger(Tiempo_Direccion_Actual),",
 						"          Ingreso = toInteger(Ingreso),",
@@ -800,6 +825,7 @@
 						"          Deuda_TC = toInteger(Deuda_TC),",
 						"          Deuda_Otros = toInteger(Deuda_Otros),",
 						"          Ratio_Cuota_Ingreso = toDecimal(Ratio_Cuota_Ingreso)) ~> TranformacionDatos",
+						"TranformacionDatos filter(!(isNull(Cod_Cliente))) ~> EmptyFiltrer",
 						"RawClientes select(mapColumn(",
 						"          CODMES,",
 						"          Cod_Cliente,",
@@ -812,11 +838,11 @@
 						"          Ratio_Deuda_Ingreso,",
 						"          Deuda_TC,",
 						"          Deuda_Otros,",
-						"          Ratio_Cuota_Ingreso",
+						"          Ratio_Cuota_Ingreso,",
+						"          Default",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> SelecDatos",
-						"TranformacionDatos filter(!(isNull(Cod_Cliente))) ~> EmptyFiltrer",
+						"     skipDuplicateMapOutputs: true) ~> select1",
 						"EmptyFiltrer sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
@@ -833,32 +859,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_target_parquet_tf')]",
 				"[concat(variables('factoryId'), '/datasets/ds_master_source_parquet_tf')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_master_source_parquet_tf')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ADLSLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "m_clientes1.parquet",
-						"folderPath": "data",
-						"fileSystem": "master"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ADLSLinkedService')]"
 			]
 		}
 	]
