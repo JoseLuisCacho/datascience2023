@@ -27,10 +27,10 @@
 					"name": "TranformacionDatos"
 				},
 				{
-					"name": "SelecDatos"
+					"name": "EmptyFiltrer"
 				},
 				{
-					"name": "EmptyFiltrer"
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -53,7 +53,7 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> RawClientes",
-				"SelecDatos derive(Edad = toInteger(Edad),",
+				"select1 derive(Edad = toInteger(Edad),",
 				"          Antiguedad_Laboral = toInteger(Antiguedad_Laboral),",
 				"          Tiempo_Direccion_Actual = toInteger(Tiempo_Direccion_Actual),",
 				"          Ingreso = toInteger(Ingreso),",
@@ -61,6 +61,7 @@
 				"          Deuda_TC = toInteger(Deuda_TC),",
 				"          Deuda_Otros = toInteger(Deuda_Otros),",
 				"          Ratio_Cuota_Ingreso = toDecimal(Ratio_Cuota_Ingreso)) ~> TranformacionDatos",
+				"TranformacionDatos filter(!(isNull(Cod_Cliente))) ~> EmptyFiltrer",
 				"RawClientes select(mapColumn(",
 				"          CODMES,",
 				"          Cod_Cliente,",
@@ -73,11 +74,11 @@
 				"          Ratio_Deuda_Ingreso,",
 				"          Deuda_TC,",
 				"          Deuda_Otros,",
-				"          Ratio_Cuota_Ingreso",
+				"          Ratio_Cuota_Ingreso,",
+				"          Default",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SelecDatos",
-				"TranformacionDatos filter(!(isNull(Cod_Cliente))) ~> EmptyFiltrer",
+				"     skipDuplicateMapOutputs: true) ~> select1",
 				"EmptyFiltrer sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
