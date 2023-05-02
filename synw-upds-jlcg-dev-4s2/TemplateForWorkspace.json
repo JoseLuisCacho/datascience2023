@@ -13,6 +13,15 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/ApacheNotebook')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Create Table Sentence')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
@@ -38,7 +47,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "-----------------------------------------------\n--Paso 01\n-----------------------------------------------\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/master/data/*.parquet', --leer todos los parquet dentro del contenedor\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n-----------------------------------------------\n--Paso 02\n-----------------------------------------------\nCREATE EXTERNAL TABLE master_party.dim_clientes04( \n    CODMES nvarchar(6),\n    Cod_Cliente nvarchar(10),\n    Edad int,\n    Departamento nvarchar(50),\n    Nivel_Educ nvarchar(50),\n    Antiguedad_Laboral int,\n    Tiempo_Direccion int,\n    Ingreso int,\n    Ratio_Deuda_Ingreso decimal(4,2),\n    Deuda_TC int,\n    Deuda_Otros int,\n    Ratio_Cuota_Ingreso decimal(4,2),\n    Pepe nvarchar(10)\n    )\nWITH (\n     LOCATION = '/master/data/',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(10) * FROM master_party.dim_clientes04;\n\n\nCREATE EXTERNAL TABLE master_party.dim_users_100(\n    Id nvarchar(50),\n    CreationDate nvarchar(50),\n    DownVotes nvarchar(10),\n    LastAccessDate nvarchar(50),\n    Reputation nvarchar(50),\n    UpVote nvarchar(50),\n    Views nvarchar(50),\n    Email nvarchar(50)\n)\n\nWITH (\n     LOCATION = '/raw/data/sharedknow/users/',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(100) * FROM master_party.dim_users_100;\n\n\n\n-----------------------------------------------\n--Paso 03\n-----------------------------------------------\nSELECT party_id,hash_unique,process_date, email,creation_date,\nreputation_count, upvotes_count, downvotes_count, views_count, record_source, \nflag_active,load_date,creation_user\nFROM master_party.m_party\n\n-----------------------------------------------\n--Paso 04\n-----------------------------------------------\nCREATE EXTERNAL TABLE business_knowa.bi_users_dim\nWITH (\n    LOCATION = '/business/business_knowa/bi_users_dim/',\n    DATA_SOURCE = ExternalUPDataSource,  \n    FILE_FORMAT = UPParquetFileFormat\n) AS \n\nSELECT TOP(100) Id,CreationDate FROM master_party.dim_users;\nSELECT * FROM business_knowa.bi_users_dim\n\n\n\nWITH ShortCreationTable(shortdate) AS (\nSELECT CONVERT(DATE, SUBSTRING(creation_date, 1,10)) AS shortdate\nFROM master_transaction.t_interaction\n), DistinctDateTable (distinctdate) AS (\nSELECT DISTINCT shortdate as distinctdate\nFROM ShortCreationTable\n)\n\nSELECT ROW_NUMBER() OVER(ORDER BY distinctdate ASC) AS period_id, \ndistinctdate as period,\nYEAR(distinctdate) as year,\nMONTH(distinctdate) as month\nFROM DistinctDateTable;",
+					"query": "-----------------------------------------------\n--Paso 01\n-----------------------------------------------\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/master/data/*.parquet', --leer todos los parquet dentro del contenedor\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n-----------------------------------------------\n--Paso 02 Crear la tabla junto con sus campos de acuerdo al tipo de variable\n\n-----------------------------------------------\nCREATE EXTERNAL TABLE master_party.dim_clientes002( \n    CODMES nvarchar(6),\n    Cod_Cliente nvarchar(10),\n    Edad int,\n    Departamento nvarchar(50),\n    Nivel_Educ nvarchar(50),\n    Antiguedad_Laboral int,\n    Tiempo_Direccion_Actual int,\n    Ingreso int,\n    Ratio_Deuda_Ingreso decimal(4,2),\n    Deuda_TC int,\n    Deuda_Otros int,\n    Ratio_Cuota_Ingreso decimal(4,2),\n    Default_Value int\n    )\nWITH (\n     LOCATION = '/master/data/',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(10) * FROM master_party.dim_clientes002;\n-----------------------------------------------\n--Paso 03\n-----------------------------------------------\nSELECT * FROM master_party.dim_clientes002\n\n-----------------------------------------------\n--Paso 04 pasamos un select de toda mi tabla y pasamos a otra tabla para su visualizacion\n-----------------------------------------------\nCREATE EXTERNAL TABLE business_knowa.bi_clientes_dim\nWITH (\n    LOCATION = '/business/business_knowa/bi_clientes_tf/',\n    DATA_SOURCE = ExternalUPDataSource,  \n    FILE_FORMAT = UPParquetFileFormat\n) AS \nSELECT TOP(100) * FROM master_party.dim_clientes002;\n\nSELECT * FROM business_knowa.bi_clientes_dim\n-------------------------------------------------------------\n\nWITH ShortCreationTable(shortdate) AS (\nSELECT CONVERT(DATE, SUBSTRING(creation_date, 1,10)) AS shortdate\nFROM master_transaction.t_interaction\n), DistinctDateTable (distinctdate) AS (\nSELECT DISTINCT shortdate as distinctdate\nFROM ShortCreationTable\n)\n\nSELECT ROW_NUMBER() OVER(ORDER BY distinctdate ASC) AS period_id, \ndistinctdate as period,\nYEAR(distinctdate) as year,\nMONTH(distinctdate) as month\nFROM DistinctDateTable;",
 					"metadata": {
 						"language": "sql"
 					},
@@ -91,6 +100,163 @@
 				"type": "SqlQuery"
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Preprocessing')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "ApacheNotebook",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "3fc2f6e0-47bd-49f9-92a9-198bc7a6821e"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/0415ebd8-8cd6-4d2d-9b25-ee1c04ba873a/resourceGroups/rg-upds-jlcg-dev-001/providers/Microsoft.Synapse/workspaces/synw-upds-jlcg-dev-4s2/bigDataPools/ApacheNotebook",
+						"name": "ApacheNotebook",
+						"type": "Spark",
+						"endpoint": "https://synw-upds-jlcg-dev-4s2.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/ApacheNotebook",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.3",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 15
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"import pandas as pd\r\n",
+							"import matplotlib.pyplot as plt\r\n",
+							"import seaborn as sns\r\n",
+							"import statsmodels.api as sm\r\n",
+							"\r\n",
+							"df = pd.read_parquet('abfss://master@dlsupdsjlcgdev9by.dfs.core.windows.net/data/m_clientes1.parquet', \r\n",
+							"storage_options = {'account_key':'SZSdW41bmijR6bKC3ljq2gIIxrcRgLyA/c+eiWWWeyXXOKWXP8GDvXTo2V84rycMxHkBIPQvQCt/+AStSNOUMQ=='})\r\n",
+							"df.columns"
+						],
+						"outputs": [],
+						"execution_count": 46
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"group_edad= df.groupby('Nivel_Educ').count()\r\n",
+							"group_edad['Edad'].plot(kind='bar')"
+						],
+						"outputs": [],
+						"execution_count": 47
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"group_edad= df.groupby('Nivel_Educ').count()\r\n",
+							"group_edad['Default_Value'].plot(kind='bar')"
+						],
+						"outputs": [],
+						"execution_count": 52
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"correlacion = df['Antiguedad_Laboral'].corr(df['Ingreso'])\r\n",
+							"print(correlacion)"
+						],
+						"outputs": [],
+						"execution_count": 48
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ApacheNotebook')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 15
+				},
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 3,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "Small",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.3",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus2"
 		}
 	]
 }
