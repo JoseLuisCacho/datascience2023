@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DataFlow Badges",
+				"name": "DataFlow Tarea",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -23,6 +23,73 @@
 								"filename": "sk_badges.parquet",
 								"appname": "sharedknow",
 								"objectname": "badges"
+							},
+							"Rawlinktypes": {
+								"filename": "sk_linktypes.parquet",
+								"appname": "sharedknow",
+								"objectname": "linktypes"
+							},
+							"Rawcomments": {
+								"filename": "sk_comments.parquet",
+								"appname": "sharedknow",
+								"objectname": "comments"
+							},
+							"Rawpostlinks": {
+								"filename": "sk_postlinks.parquet",
+								"appname": "sharedknow",
+								"objectname": "postlinks"
+							},
+							"Rawposttypes": {
+								"filename": "sk_posttypes.parquet",
+								"appname": "sharedknow",
+								"objectname": "posttypes"
+							},
+							"Rawusers": {
+								"filename": "sk_users.parquet",
+								"appname": "sharedknow",
+								"objectname": "users"
+							},
+							"Rawvotes": {
+								"filename": "sk_votes.parquet",
+								"appname": "sharedknow",
+								"objectname": "votes"
+							},
+							"Rawvotetypes": {
+								"filename": "sk_votetypes.parquet",
+								"appname": "sharedknow",
+								"objectname": "votetypes"
+							},
+							"MasterBadges": {
+								"objectname": "badges",
+								"filename": "m_badges.parquet"
+							},
+							"Masterlinktypes": {
+								"objectname": "linktypes",
+								"filename": "m_linktypes.parquet"
+							},
+							"Mastercomments": {
+								"objectname": "comments",
+								"filename": "m_comments.parquet"
+							},
+							"Masterpostlinks": {
+								"objectname": "postlinks",
+								"filename": "m_postlinks.parquet"
+							},
+							"Masterposttypes": {
+								"objectname": "posttypes",
+								"filename": "m_posttypes.parquet"
+							},
+							"Masterusers": {
+								"objectname": "users",
+								"filename": "m_users.parquet"
+							},
+							"Mastervotes": {
+								"objectname": "votes",
+								"filename": "m_votes.parquet"
+							},
+							"Mastervotetypes": {
+								"objectname": "votetypes",
+								"filename": "m_votetypes.parquet"
 							}
 						}
 					},

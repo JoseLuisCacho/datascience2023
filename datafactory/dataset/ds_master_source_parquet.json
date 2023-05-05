@@ -5,13 +5,24 @@
 			"referenceName": "ADLSLinkedService",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"objectname": {
+				"type": "string"
+			},
+			"filename": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "m_badges.parquet",
-				"folderPath": "data",
+				"fileName": {
+					"value": "@concat(dataset().objectname,'/',dataset().filename)",
+					"type": "Expression"
+				},
+				"folderPath": "data/sharedknow",
 				"fileSystem": "master"
 			},
 			"compressionCodec": "snappy"
