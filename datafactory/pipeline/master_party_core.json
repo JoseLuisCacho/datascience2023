@@ -16,13 +16,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow_trabajofinal",
+						"referenceName": "dataflow_sharedknow",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"RawClientes": {
+							"RawDataBadges": {
+								"filename": "sk_badges.parquet",
 								"appname": "sharedknow",
-								"objectname": "badges",
-								"fileName": "sk_badges.parquet"
+								"objectname": "badges"
 							}
 						}
 					},
