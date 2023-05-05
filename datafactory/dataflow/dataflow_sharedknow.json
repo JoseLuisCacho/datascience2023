@@ -10,55 +10,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "RawDataBadges"
-				},
-				{
-					"dataset": {
-						"referenceName": "ds_target_parquet",
-						"type": "DatasetReference"
-					},
-					"name": "RawDataComments"
-				},
-				{
-					"dataset": {
-						"referenceName": "ds_target_parquet",
-						"type": "DatasetReference"
-					},
-					"name": "Rawlinktypes"
-				},
-				{
-					"dataset": {
-						"referenceName": "ds_target_parquet",
-						"type": "DatasetReference"
-					},
-					"name": "Rawpostlinks"
-				},
-				{
-					"dataset": {
-						"referenceName": "ds_target_parquet",
-						"type": "DatasetReference"
-					},
-					"name": "Rawposttypes"
-				},
-				{
-					"dataset": {
-						"referenceName": "ds_target_parquet",
-						"type": "DatasetReference"
-					},
-					"name": "Rawusers"
-				},
-				{
-					"dataset": {
-						"referenceName": "ds_target_parquet",
-						"type": "DatasetReference"
-					},
-					"name": "Rawvotes"
-				},
-				{
-					"dataset": {
-						"referenceName": "ds_target_parquet",
-						"type": "DatasetReference"
-					},
-					"name": "Rawvotetypes"
 				}
 			],
 			"sinks": [
@@ -86,79 +37,6 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> RawDataBadges",
-				"source(output(",
-				"          Id as string,",
-				"          CreationDate as string,",
-				"          PostId as string,",
-				"          Score as string,",
-				"          UserId as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> RawDataComments",
-				"source(output(",
-				"          Id as string,",
-				"          Type as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> Rawlinktypes",
-				"source(output(",
-				"          Id as string,",
-				"          CreationDate as string,",
-				"          PostId as string,",
-				"          RelatedPostId as string,",
-				"          LinkTypeId as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> Rawpostlinks",
-				"source(output(",
-				"          Id as string,",
-				"          Type as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> Rawposttypes",
-				"source(output(",
-				"          Id as string,",
-				"          CreationDate as string,",
-				"          DownVotes as string,",
-				"          LastAccessDate as string,",
-				"          Reputation as string,",
-				"          UpVotes as string,",
-				"          Views as string,",
-				"          AccountId as string,",
-				"          Email as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> Rawusers",
-				"source(output(",
-				"          Id as string,",
-				"          PostId as string,",
-				"          UserId as string,",
-				"          BountyAmount as string,",
-				"          VoteTypeId as string,",
-				"          CreationDate as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> Rawvotes",
-				"source(output(",
-				"          Id as string,",
-				"          Name as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> Rawvotetypes",
 				"RawDataBadges derive(Id = toInteger(Id)) ~> derivedColumn1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
