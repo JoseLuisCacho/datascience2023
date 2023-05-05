@@ -64,7 +64,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_master_source_parquet_copy1",
+						"referenceName": "ds_master_source_parquet",
 						"type": "DatasetReference"
 					},
 					"name": "MasterBadges"
@@ -163,6 +163,7 @@
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
+				"     filePattern:'m_badges[n].parquet',",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
