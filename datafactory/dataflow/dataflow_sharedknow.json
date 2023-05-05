@@ -140,6 +140,9 @@
 				},
 				{
 					"name": "select2"
+				},
+				{
+					"name": "select3"
 				}
 			],
 			"scriptLines": [
@@ -235,7 +238,8 @@
 				"          DownVotes = toInteger(DownVotes),",
 				"          Reputation = toInteger(Reputation),",
 				"          UpVotes = toInteger(UpVotes)) ~> derivedColumn4",
-				"Rawvotes derive(CreationDate = toTimestamp(CreationDate)) ~> derivedColumn5",
+				"select3 derive(CreationDate = toTimestamp(CreationDate),",
+				"          VoteTypeId_value = toInteger(VoteTypeId_value)) ~> derivedColumn5",
 				"RawDataBadges select(mapColumn(",
 				"          Id,",
 				"          Name_value = Name,",
@@ -250,6 +254,16 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
+				"Rawvotes select(mapColumn(",
+				"          Id,",
+				"          PostId,",
+				"          UserId,",
+				"          BountyAmount,",
+				"          VoteTypeId_value = VoteTypeId,",
+				"          CreationDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
