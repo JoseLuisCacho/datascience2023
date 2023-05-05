@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy Badges",
+				"name": "Copy Comments",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -50,9 +50,9 @@
 						"referenceName": "ds_source_csv_pipe",
 						"type": "DatasetReference",
 						"parameters": {
-							"filename": "sk_badges.csv",
+							"filename": "sk_comments.csv",
 							"appname": "sharedknow",
-							"objectname": "badges"
+							"objectname": "comments"
 						}
 					}
 				],
@@ -61,9 +61,374 @@
 						"referenceName": "ds_target_parquet",
 						"type": "DatasetReference",
 						"parameters": {
-							"filename": "sk_badges.parquet",
-							"appname": "raw",
-							"objectname": "data"
+							"filename": "sk_comments.parquet",
+							"appname": "sharedknow",
+							"objectname": "comments"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy linktypes",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy Comments",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "FileServerReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_source_csv_pipe",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_linktypes.csv",
+							"appname": "sharedknow",
+							"objectname": "linktypes"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_linktypes.parquet",
+							"appname": "sharedknow",
+							"objectname": "linktypes"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy postlinks",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy linktypes",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "FileServerReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_source_csv_pipe",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_postlinks.csv",
+							"appname": "sharedknow",
+							"objectname": "postlinks"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_postlinks.parquet",
+							"appname": "sharedknow",
+							"objectname": "postlinks"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy posttypes",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy postlinks",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "FileServerReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_source_csv_pipe",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_posttypes.csv",
+							"appname": "sharedknow",
+							"objectname": "posttypes"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_posttypes.parquet",
+							"appname": "sharedknow",
+							"objectname": "posttypes"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy votes",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy posttypes",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "FileServerReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_source_csv_pipe",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_votes.csv",
+							"appname": "sharedknow",
+							"objectname": "votes"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_votes.parquet",
+							"appname": "sharedknow",
+							"objectname": "votes"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy votetypes",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy votes",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "FileServerReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_source_csv_pipe",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_votetypes.csv",
+							"appname": "sharedknow",
+							"objectname": "votetypes"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_votetypes.parquet",
+							"appname": "sharedknow",
+							"objectname": "votetypes"
 						}
 					}
 				]
