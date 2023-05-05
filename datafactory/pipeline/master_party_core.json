@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow Clientes",
+				"name": "DataFlow Badges",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -20,9 +20,9 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"RawClientes": {
-								"appname": "trabajofinal",
-								"objectname": "clientes",
-								"fileName": "archivo1.parquet"
+								"appname": "sharedknow",
+								"objectname": "badges",
+								"fileName": "sk_badges.parquet"
 							}
 						}
 					},

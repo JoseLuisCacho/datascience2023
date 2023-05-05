@@ -1,0 +1,60 @@
+{
+	"name": "dataflow_sharedknow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "RawDataBadges"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "RawDataComments"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          Id as string,",
+				"          Name as string,",
+				"          UserId as string,",
+				"          Date as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> RawDataBadges",
+				"source(output(",
+				"          Id as string,",
+				"          CreationDate as string,",
+				"          PostId as string,",
+				"          Score as string,",
+				"          UserId as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> RawDataComments",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> source1"
+			]
+		}
+	}
+}
