@@ -137,6 +137,9 @@
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -241,6 +244,12 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
+				"Rawvotetypes select(mapColumn(",
+				"          Id,",
+				"          Name_value = Name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -304,7 +313,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> Mastervotes",
-				"Rawvotetypes sink(allowSchemaDrift: true,",
+				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     filePattern:'m_votetypes[n].parquet',",
