@@ -493,7 +493,12 @@
 				"inputs": [
 					{
 						"referenceName": "ds_source_csv_pipe",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "sk_users.csv",
+							"appname": "sharedknow",
+							"objectname": "users"
+						}
 					}
 				],
 				"outputs": [
