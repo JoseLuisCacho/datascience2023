@@ -67,7 +67,7 @@
 						"referenceName": "ds_master_source_parquet",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "MasterBadges"
 				}
 			],
 			"transformations": [
@@ -167,7 +167,7 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> MasterBadges"
 			]
 		}
 	}
