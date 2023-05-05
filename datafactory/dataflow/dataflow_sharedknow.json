@@ -61,8 +61,20 @@
 					"name": "Rawvotetypes"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_master_source_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          Id as string,",
@@ -113,7 +125,15 @@
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> Rawposttypes",
 				"source(output(",
-				"          {Id|\"CreationDate\"|\"DownVotes\"|\"LastAccessDate\"|\"Reputation\"|\"UpVotes\"|\"Views\"|\"AccountId\"|\"Email\"} as string",
+				"          Id as string,",
+				"          CreationDate as string,",
+				"          DownVotes as string,",
+				"          LastAccessDate as string,",
+				"          Reputation as string,",
+				"          UpVotes as string,",
+				"          Views as string,",
+				"          AccountId as string,",
+				"          Email as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -138,7 +158,17 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> Rawvotetypes"
+				"     format: 'parquet') ~> Rawvotetypes",
+				"RawDataBadges derive(Id = toInteger(Id),",
+				"          column1 = ERROR_FUNCTION('')) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}

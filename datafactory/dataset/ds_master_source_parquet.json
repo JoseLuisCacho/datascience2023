@@ -5,6 +5,17 @@
 			"referenceName": "ADLSLinkedService",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"appname": {
+				"type": "string"
+			},
+			"objectname": {
+				"type": "string"
+			},
+			"filename": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {
