@@ -26,18 +26,38 @@
 					"name": "Rawlinktypes"
 				},
 				{
+					"dataset": {
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference"
+					},
 					"name": "Rawpostlinks"
 				},
 				{
+					"dataset": {
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference"
+					},
 					"name": "Rawposttypes"
 				},
 				{
+					"dataset": {
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference"
+					},
 					"name": "Rawusers"
 				},
 				{
+					"dataset": {
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference"
+					},
 					"name": "Rawvotes"
 				},
 				{
+					"dataset": {
+						"referenceName": "ds_target_parquet",
+						"type": "DatasetReference"
+					},
 					"name": "Rawvotetypes"
 				}
 			],
@@ -73,16 +93,52 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> Rawlinktypes",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> Rawpostlinks",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> Rawposttypes",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> Rawusers",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> Rawvotes",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> Rawvotetypes"
+				"source(output(",
+				"          Id as string,",
+				"          CreationDate as string,",
+				"          PostId as string,",
+				"          RelatedPostId as string,",
+				"          LinkTypeId as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> Rawpostlinks",
+				"source(output(",
+				"          Id as string,",
+				"          Type as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> Rawposttypes",
+				"source(output(",
+				"          {Id|\"CreationDate\"|\"DownVotes\"|\"LastAccessDate\"|\"Reputation\"|\"UpVotes\"|\"Views\"|\"AccountId\"|\"Email\"} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> Rawusers",
+				"source(output(",
+				"          Id as string,",
+				"          PostId as string,",
+				"          UserId as string,",
+				"          BountyAmount as string,",
+				"          VoteTypeId as string,",
+				"          CreationDate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> Rawvotes",
+				"source(output(",
+				"          Id as string,",
+				"          Name as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> Rawvotetypes"
 			]
 		}
 	}
