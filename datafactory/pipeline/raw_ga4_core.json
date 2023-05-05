@@ -492,13 +492,8 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_source_csv",
-						"type": "DatasetReference",
-						"parameters": {
-							"filename": "sk_users.csv",
-							"appname": "sharedknow",
-							"objectname": "users"
-						}
+						"referenceName": "ds_source_csv_pipe",
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
@@ -506,7 +501,7 @@
 						"referenceName": "ds_target_parquet",
 						"type": "DatasetReference",
 						"parameters": {
-							"filename": "users.parquet",
+							"filename": "sk_users.parquet",
 							"appname": "sharedknow",
 							"objectname": "users"
 						}
