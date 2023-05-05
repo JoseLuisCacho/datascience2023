@@ -73,7 +73,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "DataFlow Badges",
+						"name": "DataFlow Tarea",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -86,16 +86,82 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "dataflow_trabajofinal",
+								"referenceName": "dataflow_sharedknow",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"RawClientes": {
+									"RawDataBadges": {
+										"filename": "sk_badges.parquet",
 										"appname": "sharedknow",
-										"objectname": "badges",
-										"fileName": "sk_badges.parquet"
+										"objectname": "badges"
 									},
-									"MasterClientes": {}
+									"Rawlinktypes": {
+										"filename": "sk_linktypes.parquet",
+										"appname": "sharedknow",
+										"objectname": "linktypes"
+									},
+									"Rawcomments": {
+										"filename": "sk_comments.parquet",
+										"appname": "sharedknow",
+										"objectname": "comments"
+									},
+									"Rawpostlinks": {
+										"filename": "sk_postlinks.parquet",
+										"appname": "sharedknow",
+										"objectname": "postlinks"
+									},
+									"Rawposttypes": {
+										"filename": "sk_posttypes.parquet",
+										"appname": "sharedknow",
+										"objectname": "posttypes"
+									},
+									"Rawusers": {
+										"filename": "sk_users.parquet",
+										"appname": "sharedknow",
+										"objectname": "users"
+									},
+									"Rawvotes": {
+										"filename": "sk_votes.parquet",
+										"appname": "sharedknow",
+										"objectname": "votes"
+									},
+									"Rawvotetypes": {
+										"filename": "sk_votetypes.parquet",
+										"appname": "sharedknow",
+										"objectname": "votetypes"
+									},
+									"MasterBadges": {
+										"objectname": "badges",
+										"filename": "m_badges.parquet"
+									},
+									"Masterlinktypes": {
+										"objectname": "linktypes",
+										"filename": "m_linktypes.parquet"
+									},
+									"Mastercomments": {
+										"objectname": "comments",
+										"filename": "m_comments.parquet"
+									},
+									"Masterpostlinks": {
+										"objectname": "postlinks",
+										"filename": "m_postlinks.parquet"
+									},
+									"Masterposttypes": {
+										"objectname": "posttypes",
+										"filename": "m_posttypes.parquet"
+									},
+									"Masterusers": {
+										"objectname": "users",
+										"filename": "m_users.parquet"
+									},
+									"Mastervotes": {
+										"objectname": "votes",
+										"filename": "m_votes.parquet"
+									},
+									"Mastervotetypes": {
+										"objectname": "votetypes",
+										"filename": "m_votetypes.parquet"
+									}
 								}
 							},
 							"staging": {},
@@ -123,7 +189,7 @@
 				"lastPublishTime": "2023-04-14T00:48:58Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow_trabajofinal')]"
+				"[concat(variables('factoryId'), '/dataflows/dataflow_sharedknow')]"
 			]
 		},
 		{
@@ -1189,13 +1255,24 @@
 					"referenceName": "ADLSLinkedService",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"objectname": {
+						"type": "string"
+					},
+					"filename": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
 				"type": "Parquet",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "m_badges.parquet",
-						"folderPath": "data",
+						"fileName": {
+							"value": "@concat(dataset().objectname,'/',dataset().filename)",
+							"type": "Expression"
+						},
+						"folderPath": "data/sharedknow",
 						"fileSystem": "master"
 					},
 					"compressionCodec": "snappy"
@@ -1267,6 +1344,55 @@
 						}
 					},
 					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/FileLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_source_csv_pipe')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "FileLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"filename": {
+						"type": "string"
+					},
+					"appname": {
+						"type": "string"
+					},
+					"objectname": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FileServerLocation",
+						"fileName": {
+							"value": "@concat(dataset().objectname,'/',dataset().filename)",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().appname",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -1458,6 +1584,294 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_sharedknow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_target_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "RawDataBadges"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_target_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Rawlinktypes"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_target_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Rawcomments"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_target_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Rawpostlinks"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_target_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Rawposttypes"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_target_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Rawusers"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_target_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Rawvotes"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_target_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Rawvotetypes"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_master_source_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "MasterBadges"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_master_source_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Masterlinktypes"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_master_source_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Mastercomments"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_master_source_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Masterpostlinks"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_master_source_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Masterposttypes"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_master_source_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Masterusers"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_master_source_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Mastervotes"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_master_source_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Mastervotetypes"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          Id as string,",
+						"          Name as string,",
+						"          UserId as string,",
+						"          Date as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> RawDataBadges",
+						"source(output(",
+						"          Id as string,",
+						"          Type as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> Rawlinktypes",
+						"source(output(",
+						"          Id as string,",
+						"          CreationDate as string,",
+						"          PostId as string,",
+						"          Score as string,",
+						"          UserId as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> Rawcomments",
+						"source(output(",
+						"          Id as string,",
+						"          CreationDate as string,",
+						"          PostId as string,",
+						"          RelatedPostId as string,",
+						"          LinkTypeId as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> Rawpostlinks",
+						"source(output(",
+						"          Id as string,",
+						"          Type as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> Rawposttypes",
+						"source(output(",
+						"          Id as string,",
+						"          CreationDate as string,",
+						"          DownVotes as string,",
+						"          LastAccessDate as string,",
+						"          Reputation as string,",
+						"          UpVotes as string,",
+						"          Views as string,",
+						"          AccountId as string,",
+						"          Email as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> Rawusers",
+						"source(output(",
+						"          Id as string,",
+						"          PostId as string,",
+						"          UserId as string,",
+						"          BountyAmount as string,",
+						"          VoteTypeId as string,",
+						"          CreationDate as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> Rawvotes",
+						"source(output(",
+						"          Id as string,",
+						"          Name as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> Rawvotetypes",
+						"RawDataBadges sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     filePattern:'m_badges[n].parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> MasterBadges",
+						"Rawlinktypes sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     filePattern:'m_linktypes[n].parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Masterlinktypes",
+						"Rawcomments sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     filePattern:'m_comments[n].parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Mastercomments",
+						"Rawpostlinks sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     filePattern:'m_postlinks[n].parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Masterpostlinks",
+						"Rawposttypes sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     filePattern:'m_posttypes[n].parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Masterposttypes",
+						"Rawusers sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     filePattern:'m_users[n].parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Masterusers",
+						"Rawvotes sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     filePattern:'m_votes[n].parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Mastervotes",
+						"Rawvotetypes sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     filePattern:'m_votetypes[n].parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Mastervotetypes"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_target_parquet')]",
+				"[concat(variables('factoryId'), '/datasets/ds_master_source_parquet')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/dataflow_trabajofinal')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1557,114 +1971,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_target_parquet_tf')]",
 				"[concat(variables('factoryId'), '/datasets/ds_master_source_parquet_tf')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_source_csv_pipe')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "FileLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"filename": {
-						"type": "string"
-					},
-					"appname": {
-						"type": "string"
-					},
-					"objectname": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "FileServerLocation",
-						"fileName": {
-							"value": "@concat(dataset().objectname,'/',dataset().filename)",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@dataset().appname",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/FileLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflow_sharedknow')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_target_parquet",
-								"type": "DatasetReference"
-							},
-							"name": "RawDataBadges"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_master_source_parquet",
-								"type": "DatasetReference"
-							},
-							"name": "MasterBadges"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Id as string,",
-						"          Name as string,",
-						"          UserId as string,",
-						"          Date as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet') ~> RawDataBadges",
-						"RawDataBadges derive(Id = toInteger(Id)) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     filePattern:'m_badges[n].parquet',",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> MasterBadges"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_target_parquet')]",
-				"[concat(variables('factoryId'), '/datasets/ds_master_source_parquet')]"
 			]
 		}
 	]
