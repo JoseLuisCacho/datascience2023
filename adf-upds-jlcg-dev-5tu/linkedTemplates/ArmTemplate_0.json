@@ -118,6 +118,10 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat(dataset().appname,'/',dataset().objectname,'/',dataset().filename)",
+							"type": "Expression"
+						},
 						"folderPath": "data",
 						"fileSystem": "master"
 					},
@@ -257,6 +261,32 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/IRLocaljlcg01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_master_source_parquet_copy1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLSLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "m_badges.parquet",
+						"folderPath": "data",
+						"fileSystem": "master"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLSLinkedService')]"
 			]
 		},
 		{
@@ -572,7 +602,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_master_source_parquet",
+								"referenceName": "ds_master_source_parquet_copy1",
 								"type": "DatasetReference"
 							},
 							"name": "MasterBadges"
@@ -681,7 +711,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_target_parquet')]",
-				"[concat(variables('factoryId'), '/datasets/ds_master_source_parquet')]"
+				"[concat(variables('factoryId'), '/datasets/ds_master_source_parquet_copy1')]"
 			]
 		},
 		{
