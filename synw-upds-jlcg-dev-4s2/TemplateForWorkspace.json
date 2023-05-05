@@ -13,21 +13,12 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/ApacheNotebook')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/Create Table Sentence')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "-----------------------------------------------\n--Paso 01\n-----------------------------------------------\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/raw/data/sharedknow/users/*.parquet',\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n-----------------------------------------------\n--Paso 02\n-----------------------------------------------\nCREATE EXTERNAL TABLE master_party.dim_users(\n    Id nvarchar(50),\n    CreationDate nvarchar(50),\n    DownVotes nvarchar(10),\n    LastAccessDate nvarchar(50)\n)\n\nWITH (\n     LOCATION = '/raw/data/sharedknow/users/',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(100) Id,CreationDate FROM master_party.dim_users;\n\n\nCREATE EXTERNAL TABLE master_party.dim_users_100(\n    Id nvarchar(50),\n    CreationDate nvarchar(50),\n    DownVotes nvarchar(10),\n    LastAccessDate nvarchar(50),\n    Reputation nvarchar(50),\n    UpVote nvarchar(50),\n    Views nvarchar(50),\n    Email nvarchar(50)\n)\n\nWITH (\n     LOCATION = '/raw/data/sharedknow/users/',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(100) * FROM master_party.dim_users_100;\n\n\n\n-----------------------------------------------\n--Paso 03\n-----------------------------------------------\nSELECT party_id,hash_unique,process_date, email,creation_date,\nreputation_count, upvotes_count, downvotes_count, views_count, record_source, \nflag_active,load_date,creation_user\nFROM master_party.m_party\n\n-----------------------------------------------\n--Paso 04\n-----------------------------------------------\nCREATE EXTERNAL TABLE business_knowa.bi_users_dim\nWITH (\n    LOCATION = '/business/business_knowa/bi_users_dim/',\n    DATA_SOURCE = ExternalUPDataSource,  \n    FILE_FORMAT = UPParquetFileFormat\n) AS \n\nSELECT TOP(100) Id,CreationDate FROM master_party.dim_users;\nSELECT * FROM business_knowa.bi_users_dim\n\n\n\nWITH ShortCreationTable(shortdate) AS (\nSELECT CONVERT(DATE, SUBSTRING(creation_date, 1,10)) AS shortdate\nFROM master_transaction.t_interaction\n), DistinctDateTable (distinctdate) AS (\nSELECT DISTINCT shortdate as distinctdate\nFROM ShortCreationTable\n)\n\nSELECT ROW_NUMBER() OVER(ORDER BY distinctdate ASC) AS period_id, \ndistinctdate as period,\nYEAR(distinctdate) as year,\nMONTH(distinctdate) as month\nFROM DistinctDateTable;",
+					"query": "-----------------------------------------------\n--Paso 01\n-----------------------------------------------\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/master/data/sharedknow/badges/*.parquet', --leer todos los parquet dentro del contenedor\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/master/data/sharedknow/comments/*.parquet', --leer todos los parquet dentro del contenedor\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/master/data/sharedknow/linktypes/*.parquet', --leer todos los parquet dentro del contenedor\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/master/data/sharedknow/postlinks/*.parquet', --leer todos los parquet dentro del contenedor\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/master/data/sharedknow/posttypes/*.parquet', --leer todos los parquet dentro del contenedor\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/master/data/sharedknow/users/*.parquet', --leer todos los parquet dentro del contenedor\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/master/data/sharedknow/votes/*.parquet', --leer todos los parquet dentro del contenedor\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n\nSELECT TOP (10) *\nFrom OPENROWSET (BULK '/master/data/sharedknow/votetypes/*.parquet', --leer todos los parquet dentro del contenedor\nDATA_SOURCE= 'ExternalUPDataSource',\nFORMAT ='PARQUET')  AS [file]\nGO;\n\n\n-----------------------------------------------\n--Paso 02\n-----------------------------------------------\nCREATE EXTERNAL TABLE master_party.dim_comments4(\n    Id nvarchar(50),\n    CreationDate DATETIME,\n    PostId nvarchar(50),\n    Score nvarchar(50),\n    UserId NVARCHAR(50)\n)\nWITH (\n     LOCATION = '/master/data/sharedknow/comments/*.parquet',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(10) * FROM master_party.dim_comments4;\n\n--------------------------------------------------------------\nCREATE EXTERNAL TABLE master_party.badget003(\n    Id nvarchar(50),\n    Name_value nvarchar(50),\n    UserId nvarchar(50),\n    Date_value DATETIME    \n)\nWITH (\n     LOCATION = '/master/data/sharedknow/badges/*.parquet',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(100) * FROM master_party.badget003;\n\n--------------------------------------------------------------\nCREATE EXTERNAL TABLE master_party.linktypes(\n    Id nvarchar(50),\n    Type NVARCHAR(100)     \n)\nWITH (\n     LOCATION = '/master/data/sharedknow/linktypes/*.parquet',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(100) * FROM master_party.linktypes;\n--------------------------------------------------------------\nCREATE EXTERNAL TABLE master_party.postlinks5(\n    Id nvarchar(50),\n    CreationDate DATETIME,\n    PostId nvarchar(10),\n    RelatedPostId nvarchar(50),\n    LinkTypeld  nvarchar(10)\n)\nWITH (\n     LOCATION = '/master/data/sharedknow/postlinks/*.parquet',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(100) * FROM master_party.postlinks5;\n\n\n--------------------------------------------------------------\nCREATE EXTERNAL TABLE master_party.posttypes(\n    Id nvarchar(50),\n    Type nvarchar(50)   \n)\nWITH (\n     LOCATION = '/master/data/sharedknow/posttypes/*.parquet',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(10) * FROM master_party.posttypes;\n\n--------------------------------------------------------------\nCREATE EXTERNAL TABLE master_party.users3(\n    Id nvarchar(50),\n    CreationDate DATETIME,\n    DownVotes int,\n    LastAccessDate DATETIME,\n    Reputation int,\n    UpVotes int,\n    Views int,\n    Accountld INT,\n    Email nvarchar(100)\n)\nWITH (\n     LOCATION = '/master/data/sharedknow/users/*.parquet',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(10) * FROM master_party.users3;\n\n--------------------------------------------------------------\nCREATE EXTERNAL TABLE master_party.votes4(\n    Id nvarchar(50),\n    PostId nvarchar(50),\n    UserId nvarchar(50),\n    BountyAmount nvarchar(50),\n    VoteTypeId_value int,\n    CreationDate DATETIME    \n  \n)\nWITH (\n     LOCATION = '/master/data/sharedknow/votes/*.parquet',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(10) * FROM master_party.votes4;\n\n--------------------------------------------------------------\nCREATE EXTERNAL TABLE master_party.votetypes3(\n    Id nvarchar(50),\n    Name_value nvarchar(100)\n  \n)\nWITH (\n     LOCATION = '/master/data/sharedknow/votetypes/*.parquet',\n     DATA_SOURCE = ExternalUPDataSource,  \n     FILE_FORMAT = UPParquetFileFormat\n )\nGO\n\nSELECT TOP(10) * FROM master_party.votetypes3;\n\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -122,7 +113,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3fc2f6e0-47bd-49f9-92a9-198bc7a6821e"
+						"spark.autotune.trackingId": "e83c12db-1737-480f-b880-845bee719dca"
 					}
 				},
 				"metadata": {
@@ -147,15 +138,13 @@
 						"sparkVersion": "3.3",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 15
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"import pandas as pd\r\n",
 							"import matplotlib.pyplot as plt\r\n",
