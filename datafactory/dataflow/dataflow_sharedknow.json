@@ -23,7 +23,22 @@
 						"referenceName": "ds_target_parquet",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "Rawlinktypes"
+				},
+				{
+					"name": "Rawpostlinks"
+				},
+				{
+					"name": "Rawposttypes"
+				},
+				{
+					"name": "Rawusers"
+				},
+				{
+					"name": "Rawvotes"
+				},
+				{
+					"name": "Rawvotetypes"
 				}
 			],
 			"sinks": [],
@@ -50,10 +65,24 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> RawDataComments",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          Id as string,",
+				"          Type as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> source1"
+				"     format: 'parquet') ~> Rawlinktypes",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> Rawpostlinks",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> Rawposttypes",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> Rawusers",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> Rawvotes",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> Rawvotetypes"
 			]
 		}
 	}
