@@ -134,6 +134,9 @@
 				},
 				{
 					"name": "derivedColumn5"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -220,7 +223,7 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> Rawvotetypes",
-				"RawDataBadges derive(Date = toTimestamp(Date)) ~> derivedColumn1",
+				"select1 derive(Date_value = toTimestamp(Date_value)) ~> derivedColumn1",
 				"Rawcomments derive(CreationDate = toTimestamp(CreationDate)) ~> derivedColumn2",
 				"Rawpostlinks derive(CreationDate = toTimestamp(CreationDate)) ~> derivedColumn3",
 				"Rawusers derive(CreationDate = toTimestamp(CreationDate),",
@@ -230,6 +233,14 @@
 				"          Reputation = toInteger(Reputation),",
 				"          UpVotes = toInteger(UpVotes)) ~> derivedColumn4",
 				"Rawvotes derive(CreationDate = toTimestamp(CreationDate)) ~> derivedColumn5",
+				"RawDataBadges select(mapColumn(",
+				"          Id,",
+				"          Name_value = Name,",
+				"          UserId,",
+				"          Date_value = Date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
