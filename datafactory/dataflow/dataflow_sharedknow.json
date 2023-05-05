@@ -119,7 +119,23 @@
 					"name": "Mastervotetypes"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "derivedColumn5"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          Id as string,",
@@ -204,7 +220,17 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> Rawvotetypes",
-				"RawDataBadges sink(allowSchemaDrift: true,",
+				"RawDataBadges derive(Date = toTimestamp(Date)) ~> derivedColumn1",
+				"Rawcomments derive(CreationDate = toTimestamp(CreationDate)) ~> derivedColumn2",
+				"Rawpostlinks derive(CreationDate = toTimestamp(CreationDate)) ~> derivedColumn3",
+				"Rawusers derive(CreationDate = toTimestamp(CreationDate),",
+				"          LastAccessDate = toTimestamp(LastAccessDate),",
+				"          Views = toInteger(Views),",
+				"          DownVotes = toInteger(DownVotes),",
+				"          Reputation = toInteger(Reputation),",
+				"          UpVotes = toInteger(UpVotes)) ~> derivedColumn4",
+				"Rawvotes derive(CreationDate = toTimestamp(CreationDate)) ~> derivedColumn5",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     filePattern:'m_badges[n].parquet',",
@@ -222,7 +248,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> Masterlinktypes",
-				"Rawcomments sink(allowSchemaDrift: true,",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     filePattern:'m_comments[n].parquet',",
@@ -231,7 +257,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> Mastercomments",
-				"Rawpostlinks sink(allowSchemaDrift: true,",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     filePattern:'m_postlinks[n].parquet',",
@@ -249,7 +275,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> Masterposttypes",
-				"Rawusers sink(allowSchemaDrift: true,",
+				"derivedColumn4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     filePattern:'m_users[n].parquet',",
@@ -258,7 +284,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> Masterusers",
-				"Rawvotes sink(allowSchemaDrift: true,",
+				"derivedColumn5 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     filePattern:'m_votes[n].parquet',",
